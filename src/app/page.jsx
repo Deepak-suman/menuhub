@@ -16,7 +16,7 @@ export default function Home() {
         </div>
         
         <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 tracking-tight mb-4">
-          Jambo Platform
+          MenuHub Platform
         </h1>
         <p className="text-xl text-slate-600 font-medium mb-10 max-w-lg mx-auto">
           The ultimate multi-tenant SaaS for restaurants to manage QR menus, live orders, and seamless payments.
