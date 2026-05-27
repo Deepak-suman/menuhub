@@ -1,0 +1,221 @@
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+
+  body * {
+    font-weight: 500;
+  }
+
+  .gg-detail {
+    position: relative!important;
+    z-index: 9999!important;
+}
+
+.gg-detail.animate-gg-fadein {
+    Z-INDEX: 9999;
+    POSITION: RELATIVE;
+}
+
+/* Hide Scrollbar Utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* virtulallynews css */
+.nvs-clamp-title, .nvs-clamp-dec{
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  
+}
+a.flex.items-center.gap-4 {
+    display: inline-flex;
+}
+
+/* //virtulallynews css */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  [id] {
+    scroll-margin-top: 72px; /* nav height offset */
+  }
+
+
+}
+:root {
+  /* ========================
+     🔵 BRAND COLORS
+  ======================== */
+  --color-primary: #1c54a3;
+  --color-primary-light: #3d73c0;
+  --color-primary-lighter: #e8f0fb;
+  --color-primary-dark: #153e7a;
+  --color-primary-darker: #0f2c56;
+
+  /* ========================
+     ⚫ NEUTRAL COLORS (Gray Scale)
+  ======================== */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* ========================
+     🟢 SUCCESS
+  ======================== */
+  --color-success: #22c55e;
+  --color-success-light: #dcfce7;
+  --color-success-dark: #15803d;
+
+  /* ========================
+     🔴 ERROR / DANGER
+  ======================== */
+  --color-danger: #ef4444;
+  --color-danger-light: #fee2e2;
+  --color-danger-dark: #b91c1c;
+
+  /* ========================
+     🟡 WARNING
+  ======================== */
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #b45309;
+
+  /* ========================
+     🔵 INFO
+  ======================== */
+  --color-info: #0ea5e9;
+  --color-info-light: #e0f2fe;
+  --color-info-dark: #0369a1;
+
+  /* ========================
+     🧱 BACKGROUND COLORS
+  ======================== */
+  --bg-body: #f9fafb;
+  --bg-surface: #ffffff;
+  --bg-muted: #f3f4f6;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  /* ========================
+     ✍️ TEXT COLORS
+  ======================== */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-inverse: #ffffff;
+  --text-link: #1c54a3;
+
+  /* ========================
+     🔘 BORDER COLORS
+  ======================== */
+  --border-light: #e5e7eb;
+  --border-default: #d1d5db;
+  --border-dark: #9ca3af;
+
+  /* ========================
+     ✨ SHADOWS
+  ======================== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+
+  /* ========================
+     🔵 BUTTON COLORS
+  ======================== */
+  --btn-primary-bg: var(--color-primary);
+  --btn-primary-hover: var(--color-primary-dark);
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-bg: #e5e7eb;
+  --btn-secondary-hover: #d1d5db;
+  --btn-secondary-text: #111827;
+
+  /* ========================
+     📦 CARD / UI ELEMENTS
+  ======================== */
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+
+  /* ========================
+     🔄 TRANSITIONS
+  ======================== */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
+}
+
+*::-webkit-scrollbar-button,
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-button:single-button,
+::-webkit-scrollbar-button:double-button,
+::-webkit-scrollbar-button:vertical:decrement,
+::-webkit-scrollbar-button:vertical:increment,
+::-webkit-scrollbar-button:horizontal:decrement,
+::-webkit-scrollbar-button:horizontal:increment,
+::-webkit-scrollbar-button:vertical:start:decrement,
+::-webkit-scrollbar-button:vertical:end:increment,
+::-webkit-scrollbar-button:horizontal:start:decrement,
+::-webkit-scrollbar-button:horizontal:end:increment {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--bg-muted) !important;
+    border-radius: 10px !important;
+}
+
+/* Thumb */
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary) !important; /* #1c54a3 */
+    border-radius: 10px !important;
+    border: 1px solid var(--bg-muted) !important;
+}
+
+/* Hover */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-dark) !important;
+}
+body {
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+}
+
+.button {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  transition: var(--transition-fast);
+}
+
+.button:hover {
+  background: var(--btn-primary-hover);
+}
+
+@keyframes shrink { from { width: 100%; } to { width: 0%; } }
+.animate-\[shrink_30s_linear\] { animation: shrink 30s linear forwards; }

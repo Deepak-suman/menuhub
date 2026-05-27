@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum Role {
+  SUPER_ADMIN
+  VENDOR
+  CUSTOMER
+}
+
+model User {
+  id           String      @id @default(cuid())
+  name         String
+  email        String      @unique
+  password     String
+  role         Role        @default(VENDOR)
+  restaurantId String?
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  resetToken       String?
+  resetTokenExpiry DateTime?
+
+  @@index([restaurantId])
+}
+
+model Restaurant {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  isActive    Boolean      @default(true)
+  ownerId     String
+  users       User[]
+  categories  Category[]
+  menuItems   MenuItem[]
+  orders      Order[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  isDeleted   Boolean      @default(false) // Soft delete flag
+
+  coupons     Coupon[]
+  waiterRequests WaiterRequest[]
+  customerProfiles CustomerProfile[]
+
+  // --- Hybrid Payment Plan ---
+  plan              String    @default("FREE")     // "FREE" or "PAID"
+  razorpayKeyId     String?                         // Vendor's own Razorpay Key ID (PAID plan only)
+  razorpayKeySecret String?                         // Vendor's own Razorpay Secret (PAID plan only)
+
+  // --- Restaurant Branding ---
+  logo              String?   @db.LongText          // Vendor uploaded logo path/URL
+
+  // --- Super Admin Charges (per vendor) ---
+  platformFee       Float     @default(0)           // Fixed fee per order (₹)
+  commissionPercent Float     @default(0)           // Commission % per order
+  gstPercent        Float     @default(0)           // GST % if applicable
+  chargesNote       String?   @db.Text              // Custom charges note for this vendor
+}
+
+// Categories Table
+model Category {
+  id           String      @id @default(cuid())
+  name         String
+  icon         String?     @db.LongText // Image path or emoji
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt    DateTime    @default(now())
+
+  @@unique([name, restaurantId]) // category name should be unique within a restaurant
+  @@index([restaurantId])
+}
+
+// Menu Items Table
+model MenuItem {
+  id           String      @id @default(cuid())
+  name         String
+  price        Float       // This will act as Full Price
+  halfPrice    Float?      // Optional Half Price
+  image        String?     @db.LongText // Optional Image URL/Path
+  category     String      // e.g., "Starters", "Main Course", "Drinks"
+  isAvailable  Boolean     @default(true)
+  isDeleted    Boolean     @default(false) // Soft delete flag
+  restaurantId String
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  orderItems   OrderItem[]
+
+  @@index([restaurantId])
+}
+
+// Orders Table
+model Order {
+  id                String       @id @default(cuid())
+  tableNumber       Int
+  customerName      String?
+  status            String       @default("ACTIVE") // ACTIVE, PREPARING, COMPLETED
+  isPaid            Boolean      @default(false)    // True when UPI payment is successful
+  isBillRequested   Boolean      @default(false)
+  isBillApproved    Boolean      @default(false)
+  paymentMode       String?      // "CASH" or "ONLINE"
+  
+  // Historical Pricing
+  subTotal          Float        @default(0) // Total of items before tax/discount
+  taxAmount         Float        @default(0) // Tax applied
+  platformFeeCharged Float       @default(0) // Platform fee at the time of order
+  commissionCharged Float        @default(0) // Commission at the time of order
+  discountAmount    Float        @default(0) // Discount from coupon
+  couponCode        String?      // Applied coupon code
+
+  totalAmount       Float        @default(0) // Final amount after tax and discounts
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  restaurantId      String
+  restaurant        Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  items             OrderItem[]
+  rating            OrderRating?
+
+  @@index([restaurantId])
+  @@index([restaurantId, status])
+  @@index([restaurantId, tableNumber, status])
+}
+
+// Order Items
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  menuItemId  String
+  quantity    Int
+  size        String   @default("Full") // "Full" or "Half"
+  roundNumber Int      @default(1)      // Pehla order, dusra order etc.
+  status      String   @default("PENDING") // PENDING, COMPLETED (Per Round completion)
+  addedAt     DateTime @default(now())  // Item order me kab add hua
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@index([orderId])
+  @@index([menuItemId])
+}
+
+// Order Ratings
+model OrderRating {
+  id              String   @id @default(cuid())
+  orderId         String   @unique
+  foodTaste       Int      @default(0)
+  service         Int      @default(0)
+  cleanliness     Int      @default(0)
+  chef            Int      @default(0)
+  staff           Int      @default(0)
+  seatingComfort  Int      @default(0)
+  createdAt       DateTime @default(now())
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// Coupons System
+model Coupon {
+  id            String     @id @default(cuid())
+  code          String
+  discountType  String     @default("PERCENTAGE") // "PERCENTAGE" or "FIXED"
+  discountValue Float      
+  minOrderValue Float      @default(0)
+  maxDiscount   Float?     // Maximum discount allowed if PERCENTAGE
+  isActive      Boolean    @default(true)
+  expiryDate    DateTime?
+  restaurantId  String
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([restaurantId])
+}
+
+// Digital Waiter Bell / Calling System
+model WaiterRequest {
+  id           String     @id @default(cuid())
+  tableNumber  Int
+  type         String     // "WAITER", "WATER", "SPOONS", "BILL", "OTHER"
+  status       String     @default("PENDING") // PENDING, RESOLVED
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId])
+  @@index([restaurantId, status])
+}
+
+// VIP Diners Club / Loyalty Guest Profiles
+model CustomerProfile {
+  id           String     @id @default(cuid())
+  name         String?
+  phone        String
+  birthday     DateTime?  // Optional Date of Birth
+  anniversary  DateTime?  // Optional Anniversary Date
+  createdAt    DateTime   @default(now())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([phone, restaurantId])
+  @@index([restaurantId])
+}
