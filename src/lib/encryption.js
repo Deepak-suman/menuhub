@@ -6,7 +6,7 @@ const PREFIX = 'enc:';
 
 // Get the encryption key and ensure it is 32 bytes
 function getSecretKey() {
-  const rawKey = process.env.ENCRYPTION_KEY || 'jambo_super_secret_encrypt_key32';
+  const rawKey = process.env.ENCRYPTION_KEY || 'menuhub_super_secret_encrypt_key32';
   // Pad or truncate to ensure exactly 32 bytes
   if (rawKey.length === 32) return rawKey;
   return crypto.createHash('sha256').update(rawKey).digest();

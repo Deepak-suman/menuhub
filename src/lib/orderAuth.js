@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-const JWT_SECRET = process.env.JWT_SECRET || "jambo_default_fallback_secret_key_123456";
+const JWT_SECRET = process.env.JWT_SECRET || "menuhub_default_fallback_secret_key_123456";
 
 /**
  * Signs an order ID using HMAC-SHA256 and embeds a timestamp for secure 12-hour expiration.

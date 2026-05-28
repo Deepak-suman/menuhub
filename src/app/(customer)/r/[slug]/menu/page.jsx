@@ -102,7 +102,7 @@ function MenuContent() {
       if (res.ok) {
         const data = await res.json();
         if (data.orderToken) {
-          localStorage.setItem(`jambo_order_token_${data.orderId}`, data.orderToken);
+          localStorage.setItem(`menuhub_order_token_${data.orderId}`, data.orderToken);
         }
         clearCart();
         setOrderFormState({ show: false, couponCode: null });

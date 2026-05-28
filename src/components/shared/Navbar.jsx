@@ -24,7 +24,7 @@ export default function Navbar({ tableNumber, restaurantName, restaurantLogo }) 
         {/* Restaurant name: hamesha dikhao */}
         <div>
           <h1 className="font-bold text-gray-900 text-xl leading-none line-clamp-1">
-            {restaurantName || "Jambo"}
+            {restaurantName || "MenuHub"}
           </h1>
           <p className="text-xs text-blue-600 font-semibold uppercase tracking-wider">Restaurant</p>
         </div>

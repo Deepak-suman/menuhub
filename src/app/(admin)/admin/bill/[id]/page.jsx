@@ -38,13 +38,13 @@ export default function BillPreviewPage({ params }) {
       <div className="max-w-md mx-auto">
         {/* Top Controls */}
         <div className="flex justify-between items-center mb-6">
-          <Link 
-            href="/admin/history" 
+          <Link
+            href="/admin/history"
             className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-bold transition-colors"
           >
             <ArrowLeft size={20} /> Back
           </Link>
-          <button 
+          <button
             onClick={handlePrint}
             className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-600/20 active:scale-95 transition-all"
           >
@@ -56,9 +56,9 @@ export default function BillPreviewPage({ params }) {
         <div className="bg-white shadow-2xl p-6 rounded-sm font-mono text-slate-800 print:shadow-none print:p-0 print:m-0" id="bill-content">
           <div className="text-center border-b-2 border-dashed border-slate-200 pb-4 mb-4">
             {order.restaurant?.logo && (
-              <img 
-                src={order.restaurant.logo} 
-                alt={order.restaurant.name || "Logo"} 
+              <img
+                src={order.restaurant.logo}
+                alt={order.restaurant.name || "Logo"}
                 className="h-12 max-w-[120px] object-contain mx-auto mb-3"
               />
             )}
@@ -136,10 +136,10 @@ export default function BillPreviewPage({ params }) {
 
           <div className="mt-8 text-center border-t border-dashed border-slate-200 pt-6">
             <div className="inline-block p-2 bg-slate-50 rounded-lg mb-2">
-               <ReceiptText size={24} className="text-slate-400" />
+              <ReceiptText size={24} className="text-slate-400" />
             </div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Thank you for visiting!</p>
-            <p className="text-[9px] text-slate-300 mt-1">Jambo - Digital Restaurant Partner</p>
+            <p className="text-[9px] text-slate-300 mt-1">MenuHub - Digital Restaurant Partner</p>
           </div>
         </div>
 

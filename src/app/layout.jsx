@@ -5,13 +5,13 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: "Jambo",
+  title: "MenuHub",
   description: "Restaurant order management",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Jambo",
+    title: "MenuHub",
   },
 };
 

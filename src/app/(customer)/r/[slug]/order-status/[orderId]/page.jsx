@@ -64,7 +64,7 @@ function RatingModal({ orderId, onClose }) {
   const submitRating = async () => {
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem(`jambo_order_token_${orderId}`);
+      const token = localStorage.getItem(`menuhub_order_token_${orderId}`);
       const headers = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
       const res = await fetch(`/api/orders/${orderId}/rate`, {
@@ -359,7 +359,7 @@ function OrderItemRow({ item, orderId, now }) {
 
   const handleDelete = async () => {
     toast.loading("Removing...", { id: "del" });
-    const token = localStorage.getItem(`jambo_order_token_${orderId}`);
+    const token = localStorage.getItem(`menuhub_order_token_${orderId}`);
     const headers = {};
     if (token) headers["Authorization"] = `Bearer ${token}`;
     const res = await fetch(`/api/orders/${orderId}/items/${item.id}`, {
@@ -372,7 +372,7 @@ function OrderItemRow({ item, orderId, now }) {
 
   const handleSaveEdit = async () => {
     toast.loading("Updating...", { id: "upd" });
-    const token = localStorage.getItem(`jambo_order_token_${orderId}`);
+    const token = localStorage.getItem(`menuhub_order_token_${orderId}`);
     const headers = { "Content-Type": "application/json" };
     if (token) headers["Authorization"] = `Bearer ${token}`;
     const res = await fetch(`/api/orders/${orderId}/items/${item.id}`, {
@@ -481,7 +481,7 @@ export default function OrderStatusPage({ params }) {
     }
 
     try {
-      const token = localStorage.getItem(`jambo_order_token_${order.id}`);
+      const token = localStorage.getItem(`menuhub_order_token_${order.id}`);
       const createHeaders = { 'Content-Type': 'application/json' };
       if (token) createHeaders['Authorization'] = `Bearer ${token}`;
       const createRes = await fetch('/api/payment/create', {
@@ -502,13 +502,13 @@ export default function OrderStatusPage({ params }) {
         key: orderData.key,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: orderData.gatewayType === "VENDOR" && orderData.restaurantName ? orderData.restaurantName : "Jambo Menu",
+        name: orderData.gatewayType === "VENDOR" && orderData.restaurantName ? orderData.restaurantName : "MenuHub Menu",
         description: `Payment for Order #${order.id}`,
         order_id: orderData.id,
         handler: async function (response) {
           toast.loading("Verifying payment...", { id: "p_verify" });
           try {
-            const token = localStorage.getItem(`jambo_order_token_${order.id}`);
+            const token = localStorage.getItem(`menuhub_order_token_${order.id}`);
             const verifyHeaders = { 'Content-Type': 'application/json' };
             if (token) verifyHeaders['Authorization'] = `Bearer ${token}`;
             const verifyRes = await fetch('/api/payment/verify', {
@@ -753,7 +753,7 @@ export default function OrderStatusPage({ params }) {
                   <button
                     onClick={async () => {
                       toast.loading("Approving...", { id: "bill" });
-                      const token = localStorage.getItem(`jambo_order_token_${order.id}`);
+                      const token = localStorage.getItem(`menuhub_order_token_${order.id}`);
                       const headers = { 'Content-Type': 'application/json' };
                       if (token) headers['Authorization'] = `Bearer ${token}`;
                       await fetch(`/api/orders/${order.id}`, {
@@ -770,7 +770,7 @@ export default function OrderStatusPage({ params }) {
                   <button
                     onClick={async () => {
                       toast.loading("Approving...", { id: "bill" });
-                      const token = localStorage.getItem(`jambo_order_token_${order.id}`);
+                      const token = localStorage.getItem(`menuhub_order_token_${order.id}`);
                       const headers = { 'Content-Type': 'application/json' };
                       if (token) headers['Authorization'] = `Bearer ${token}`;
                       await fetch(`/api/orders/${order.id}`, {

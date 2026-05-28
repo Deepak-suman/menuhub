@@ -13,7 +13,7 @@ export function useOrderPolling(orderId, intervalMs = 5000) {
     let fallbackTimer = null;
     let isPolling = false;
 
-    const token = typeof window !== "undefined" ? localStorage.getItem(`jambo_order_token_${orderId}`) : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem(`menuhub_order_token_${orderId}`) : null;
 
     // Helper to fetch order from standard REST endpoint (Fallback method)
     const fetchOrder = async () => {

@@ -64,7 +64,7 @@ export default function SignupPage() {
              <Store size={32} />
           </div>
           <h1 className="text-3xl font-black text-slate-800 tracking-tight">Register Restaurant</h1>
-          <p className="text-slate-500 font-medium mt-2">Join the Jambo SaaS platform</p>
+          <p className="text-slate-500 font-medium mt-2">Join the MenuHub SaaS platform</p>
         </div>
         
         {error && (

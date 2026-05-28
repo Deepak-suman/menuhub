@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-  const superAdminEmail = 'admin@jambo.com';
+  const superAdminEmail = 'admin@menuhub.com';
   const superAdminPassword = 'admin';
 
   console.log('Seeding Database...');
