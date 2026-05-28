@@ -10,6 +10,20 @@ import path from "path";
 export async function saveUploadedFile(file, context = "general") {
   if (!file || typeof file === 'string') return null;
 
+  // STRICT SECURITY CHECK: Enforce file size limit of 5MB
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 Megabytes
+  if (file.size > MAX_FILE_SIZE) {
+    console.error(`Upload blocked: File size exceeds the 5MB limit (${file.size} bytes).`);
+    return null;
+  }
+
+  // STRICT SECURITY CHECK: Validate image MIME-type
+  const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  if (!file.type || !allowedMimeTypes.includes(file.type)) {
+    console.error(`Upload blocked: Invalid MIME-type "${file.type}".`);
+    return null;
+  }
+
   try {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);

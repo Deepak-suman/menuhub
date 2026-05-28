@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthorizedUser } from "@/lib/authorize";
+import { revalidateTag } from "next/cache";
 import fs from "fs";
 import path from "path";
 
@@ -31,6 +32,8 @@ export async function DELETE(req, { params }) {
     }
 
     await prisma.category.delete({ where: { id: id } });
+
+    revalidateTag('categories');
 
     return NextResponse.json({ success: true, message: "Category deleted successfully" });
   } catch (error) {

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import React, { useState, memo } from "react";
 import Link from "next/link";
 import { Printer } from "lucide-react";
 
-export default function OrderCard({ order, onUpdateStatus, onRefresh }) {
+const OrderCard = memo(function OrderCard({ order, onUpdateStatus, onRefresh }) {
   const [showResetModal, setShowResetModal] = useState(false);
+  
   const handleCompleteRound = async (orderId, roundNumber) => {
     try {
       const res = await fetch(`/api/orders/${orderId}/round`, {
@@ -73,7 +74,7 @@ export default function OrderCard({ order, onUpdateStatus, onRefresh }) {
                   {itemsInRound.map((item, index) => {
                     const variantPrice = item.size === 'Half' && item.menuItem.halfPrice ? item.menuItem.halfPrice : item.menuItem.price;
                     return (
-                      <li key={index} className={`flex justify-between items-start font-medium bg-gray-50/50 p-2 rounded-lg gap-2 ${item.status === "COMPLETED" ? "text-gray-400 opacity-60" : "text-gray-800"}`}>
+                      <li key={item.id || index} className={`flex justify-between items-start font-medium bg-gray-50/50 p-2 rounded-lg gap-2 ${item.status === "COMPLETED" ? "text-gray-400 opacity-60" : "text-gray-800"}`}>
                         <span className="flex items-start gap-2">
                           <span className={`w-6 h-6 flex items-center justify-center rounded-md text-xs font-bold shadow-sm border shrink-0 mt-0.5 ${item.status === 'COMPLETED' ? "bg-gray-100 text-gray-400 border-gray-200" : "bg-white text-gray-600 border-gray-200"}`}>
                             {item.quantity}
@@ -229,4 +230,6 @@ export default function OrderCard({ order, onUpdateStatus, onRefresh }) {
       )}
     </div>
   );
-}
+});
+
+export default OrderCard;

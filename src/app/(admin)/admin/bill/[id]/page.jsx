@@ -1,37 +1,32 @@
-"use client";
-import React, { useEffect, useState, use } from "react";
-import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import { Printer, ArrowLeft, ReceiptText } from "lucide-react";
+import React from "react";
+import { prisma } from "@/lib/prisma";
+import { ReceiptText, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import PrintButton from "@/components/admin/PrintButton";
 
-export default function BillPreviewPage({ params }) {
-  const unwrappedParams = use(params);
-  const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default async function BillPreviewPage({ params }) {
+  const { id } = await params;
 
-  useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const res = await fetch(`/api/orders/${unwrappedParams.id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setOrder(data);
-        }
-      } catch (error) {
-        console.error("Error fetching order:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrder();
-  }, [unwrappedParams.id]);
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: {
+      items: {
+        include: {
+          menuItem: true,
+        },
+      },
+      restaurant: {
+        select: {
+          name: true,
+          logo: true,
+        },
+      },
+    },
+  });
 
-  const handlePrint = () => {
-    window.print();
-  };
-
-  if (loading) return <LoadingSpinner fullScreen />;
-  if (!order) return <div className="p-10 text-center font-bold text-red-500">Order not found!</div>;
+  if (!order) {
+    return <div className="p-10 text-center font-bold text-red-500">Order not found!</div>;
+  }
 
   return (
     <div className="min-h-screen bg-slate-100 p-4 md:p-8 no-print">
@@ -44,12 +39,7 @@ export default function BillPreviewPage({ params }) {
           >
             <ArrowLeft size={20} /> Back
           </Link>
-          <button
-            onClick={handlePrint}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-600/20 active:scale-95 transition-all"
-          >
-            <Printer size={20} /> Print Bill
-          </button>
+          <PrintButton />
         </div>
 
         {/* Thermal Bill Container */}
@@ -87,7 +77,7 @@ export default function BillPreviewPage({ params }) {
             )}
           </div>
 
-          {/* Items Table test */}
+          {/* Items Table */}
           <table className="w-full text-left text-[12px] mb-4">
             <thead>
               <tr className="border-b-2 border-slate-900 font-black">
@@ -144,7 +134,7 @@ export default function BillPreviewPage({ params }) {
         </div>
 
         {/* Print Styles */}
-        <style jsx global>{`
+        <style dangerouslySetInnerHTML={{__html: `
           @media print {
             .no-print { display: none !important; }
             body { background: white !important; margin: 0; padding: 0; }
@@ -154,7 +144,7 @@ export default function BillPreviewPage({ params }) {
               margin: 0 auto !important; 
             }
           }
-        `}</style>
+        `}} />
       </div>
     </div>
   );

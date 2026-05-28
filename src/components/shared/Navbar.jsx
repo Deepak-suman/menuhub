@@ -1,14 +1,18 @@
+import Image from "next/image";
+
 export default function Navbar({ tableNumber, restaurantName, restaurantLogo }) {
   return (
     <nav className="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md shadow-sm z-30 px-5 py-3 border-b border-gray-100 flex justify-between items-center transition-all duration-300">
       <div className="flex items-center gap-3">
         {/* Logo: agar logo hai to sirf image dikhao, warna gradient icon */}
-        <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-md">
+        <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 shadow-md relative">
           {restaurantLogo ? (
-            <img
+            <Image
               src={restaurantLogo}
               alt={restaurantName || "Restaurant"}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              priority
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white">

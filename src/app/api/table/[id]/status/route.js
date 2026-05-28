@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getTenantId } from "@/lib/getTenant";
+import { getCachedRestaurantSettings } from "@/lib/data";
 
 export async function GET(req, { params }) {
   try {
@@ -9,11 +10,11 @@ export async function GET(req, { params }) {
 
     const { id } = await params;
     const tableNumber = parseInt(id);
+    if (isNaN(tableNumber) || tableNumber < 0) {
+      return NextResponse.json({ error: "Invalid table number" }, { status: 400 });
+    }
 
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId },
-      select: { name: true, logo: true }
-    });
+    const restaurant = await getCachedRestaurantSettings(restaurantId);
 
     const activeOrder = await prisma.order.findFirst({
       where: { 

@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthorizedUser } from "@/lib/authorize";
+import { revalidateTag } from "next/cache";
+import { getCachedRestaurantSettings } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-// GET: Vendor apni restaurant ki info fetch kare
 export async function GET(req) {
   try {
     const auth = await getAuthorizedUser(["VENDOR", "SUPER_ADMIN"]);
@@ -17,16 +18,7 @@ export async function GET(req) {
       return NextResponse.json({ error: "Restaurant context missing" }, { status: 400 });
     }
 
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        logo: true,
-        isActive: true,
-      },
-    });
+    const restaurant = await getCachedRestaurantSettings(restaurantId);
 
     if (!restaurant) {
       return NextResponse.json({ error: "Restaurant not found" }, { status: 404 });
@@ -78,6 +70,10 @@ export async function PATCH(req) {
         logo: true,
       },
     });
+
+    revalidateTag('settings');
+    // Also revalidate tenants because name/logo appears in customer menu which relies on tenant context
+    revalidateTag('tenants');
 
     return NextResponse.json(updated);
   } catch (error) {

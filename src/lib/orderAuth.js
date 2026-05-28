@@ -1,5 +1,9 @@
 import crypto from "crypto";
 
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+  throw new Error("CRITICAL SECURITY ERROR: JWT_SECRET environment variable is missing in production!");
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || "menuhub_default_fallback_secret_key_123456";
 
 /**

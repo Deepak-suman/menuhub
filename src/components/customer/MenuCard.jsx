@@ -1,6 +1,7 @@
 import { Utensils } from "lucide-react";
+import Image from "next/image";
 
-export default function MenuCard({ item, onAdd }) {
+export default function MenuCard({ item, onAdd, index = 0 }) {
   const hasVariants = !!item.halfPrice;
 
   return (
@@ -9,7 +10,14 @@ export default function MenuCard({ item, onAdd }) {
         {/* Image Section */}
         <div className="w-28 h-28 rounded-xl bg-gray-50 flex-shrink-0 overflow-hidden border border-gray-100 relative">
           {item.image ? (
-            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+            <Image 
+              src={item.image} 
+              alt={item.name} 
+              fill
+              className="object-cover" 
+              sizes="112px"
+              priority={index < 4}
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-300">
                <Utensils size={32} />

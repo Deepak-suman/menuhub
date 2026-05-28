@@ -1,5 +1,17 @@
 const rateLimitMap = new Map();
 
+// Periodic prune interval to clean expired rate limit logs every 5 minutes
+if (process.env.NODE_ENV !== "test") {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [key, value] of rateLimitMap.entries()) {
+      if (now - value.startTime > 300000) {
+        rateLimitMap.delete(key);
+      }
+    }
+  }, 300000); // 5 minutes
+}
+
 /**
  * Smart Hybrid Rate Limiter
  * - If Vercel KV REST API is configured (production), uses global Redis rate limiting.

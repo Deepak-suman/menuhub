@@ -6,6 +6,9 @@ const PREFIX = 'enc:';
 
 // Get the encryption key and ensure it is 32 bytes
 function getSecretKey() {
+  if (process.env.NODE_ENV === "production" && !process.env.ENCRYPTION_KEY) {
+    throw new Error("CRITICAL SECURITY ERROR: ENCRYPTION_KEY environment variable is missing in production!");
+  }
   const rawKey = process.env.ENCRYPTION_KEY || 'menuhub_super_secret_encrypt_key32';
   // Pad or truncate to ensure exactly 32 bytes
   if (rawKey.length === 32) return rawKey;

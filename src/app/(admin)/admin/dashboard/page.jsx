@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import OrderCard from "@/components/admin/OrderCard";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import TableRequestBar from "@/components/admin/TableRequestBar";
 import { LayoutDashboard } from "lucide-react";
 
 export default function AdminDashboard() {
@@ -19,8 +20,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // API se orders fetch karne ka function
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const res = await fetch("/api/orders");
       if (res.ok) {
@@ -32,9 +32,9 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchWaiterRequests = async () => {
+  const fetchWaiterRequests = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/waiter-requests");
       if (res.ok) {
@@ -59,16 +59,16 @@ export default function AdminDashboard() {
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
-  const updateStatus = async (id, newStatus) => {
+  const updateStatus = useCallback(async (id, newStatus) => {
     const res = await fetch(`/api/orders/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus })
     });
     if (res.ok) fetchOrders(); 
-  };
+  }, [fetchOrders]);
 
   useEffect(() => {
     fetchOrders(); 
@@ -78,62 +78,15 @@ export default function AdminDashboard() {
       fetchWaiterRequests();
     }, 5000); 
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchOrders, fetchWaiterRequests]);
 
   return (
     <div className="p-8 bg-slate-50 min-h-screen">
       
-      {/* Waiter Calling Requests Bar */}
-      {waiterRequests.length > 0 && (
-        <div className="max-w-7xl mx-auto mb-8 animate-fade-in">
-          <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-orange-200 rounded-3xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl animate-bounce">🔔</span>
-              <h2 className="text-xl font-black text-slate-800 tracking-tight">Active Table Requests</h2>
-              <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full animate-pulse">
-                {waiterRequests.length} Active
-              </span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {waiterRequests.map((req) => {
-                const optLabels = {
-                  WAITER: "Call Waiter 🙋‍♂️",
-                  WATER: "Needs Water 🥛",
-                  SPOONS: "Needs Spoons 🍴",
-                  BILL: "Needs Bill 🧾",
-                  OTHER: "Assistance 🔔"
-                };
-                const timeString = new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                return (
-                  <div key={req.id} className="bg-white border border-orange-100 rounded-2xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-red-400 to-orange-400 w-full"></div>
-                    <div className="mb-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="text-lg font-black text-slate-900">Table {req.tableNumber}</span>
-                        <span className="text-xs font-medium text-slate-400">{timeString}</span>
-                      </div>
-                      <p className="text-sm font-bold text-orange-600">{optLabels[req.type] || "Needs Help"}</p>
-                    </div>
-                    <button
-                      onClick={async () => {
-                        const res = await fetch("/api/admin/waiter-requests", {
-                          method: "PATCH",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ id: req.id, status: "RESOLVED" })
-                        });
-                        if (res.ok) fetchWaiterRequests();
-                      }}
-                      className="w-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-2.5 px-3 rounded-xl transition-all active:scale-95"
-                    >
-                      ✓ Dismiss / Serve
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
+      <TableRequestBar 
+        waiterRequests={waiterRequests} 
+        onRefreshRequests={fetchWaiterRequests} 
+      />
 
       <div className="max-w-7xl mx-auto flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">

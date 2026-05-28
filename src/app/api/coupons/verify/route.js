@@ -5,10 +5,15 @@ import { getTenantId } from "@/lib/getTenant";
 export async function POST(req) {
   try {
     const restaurantId = await getTenantId(req);
-    const { code, cartTotal } = await req.json();
+    const { code, cartTotal: rawCartTotal } = await req.json();
 
     if (!restaurantId || !code) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+
+    const cartTotal = parseFloat(rawCartTotal);
+    if (isNaN(cartTotal) || cartTotal < 0) {
+      return NextResponse.json({ error: "Invalid cart total" }, { status: 400 });
     }
 
     const coupon = await prisma.coupon.findFirst({

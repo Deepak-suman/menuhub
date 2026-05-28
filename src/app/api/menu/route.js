@@ -3,21 +3,10 @@ import { prisma } from "@/lib/prisma";
 import { saveUploadedFile } from "@/lib/uploadFile";
 import { getTenantId } from "@/lib/getTenant";
 import { getAuthorizedUser } from "@/lib/authorize";
-import { unstable_cache, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
+import { getCachedMenu } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
-
-// Helper function to fetch menu with Next.js Cache
-const getCachedMenu = unstable_cache(
-  async (restaurantId) => {
-    return await prisma.menuItem.findMany({
-      where: { restaurantId, isDeleted: false },
-      orderBy: { category: "asc" }
-    });
-  },
-  ['menu-items-cache'], 
-  { tags: ['menu'] } // tag array can be overridden but we will use dynamic tags inside the GET
-);
 
 export async function GET(req) {
   try {
@@ -26,19 +15,8 @@ export async function GET(req) {
       return NextResponse.json({ error: "Tenant not identified" }, { status: 400 });
     }
 
-    // Wrap the cache call to pass dynamic tags based on tenant
-    const fetchMenuForTenant = unstable_cache(
-      async () => {
-        return await prisma.menuItem.findMany({
-          where: { restaurantId, isDeleted: false },
-          orderBy: { category: "asc" }
-        });
-      },
-      [`menu-${restaurantId}`],
-      { tags: [`menu-${restaurantId}`], revalidate: 3600 } // Cache for 1 hour, or until invalidated
-    );
-
-    const items = await fetchMenuForTenant();
+    // Call the module-level cache helper from data.js
+    const items = await getCachedMenu(restaurantId);
     return NextResponse.json(items, { status: 200 });
   } catch (error) {
     console.error("GET Menu Error:", error);

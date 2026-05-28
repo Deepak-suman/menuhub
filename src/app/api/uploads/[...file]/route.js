@@ -7,8 +7,14 @@ export async function GET(req, { params }) {
     const { file } = await params;
     const filename = file.join("/");
     
-    // Read from the root uploads folder
-    const filePath = path.join(process.cwd(), "uploads", filename);
+    const rootUploadsDir = path.resolve(process.cwd(), "uploads");
+    const filePath = path.resolve(rootUploadsDir, filename);
+    
+    // STRICT SECURITY CHECK: Enforce path boundary constraint to prevent directory traversal
+    if (!filePath.startsWith(rootUploadsDir)) {
+      return new NextResponse("Access Denied", { status: 403 });
+    }
+
     const data = await fs.readFile(filePath);
     
     // Extrapolate basic mime type from extension

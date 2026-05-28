@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { saveUploadedFile } from "@/lib/uploadFile";
 import { getTenantId } from "@/lib/getTenant";
 import { getAuthorizedUser } from "@/lib/authorize";
+import { revalidateTag } from "next/cache";
+import { getCachedCategories } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -11,10 +13,7 @@ export async function GET(req) {
     const restaurantId = await getTenantId(req);
     if (!restaurantId) return NextResponse.json({ error: "Tenant not found" }, { status: 400 });
 
-    const categories = await prisma.category.findMany({
-      where: { restaurantId },
-      orderBy: { createdAt: "asc" }
-    });
+    const categories = await getCachedCategories(restaurantId);
     return NextResponse.json(categories);
   } catch (error) {
     console.error("GET categories error:", error);
@@ -69,6 +68,8 @@ export async function POST(req) {
         restaurantId: finalRestaurantId
       }
     });
+
+    revalidateTag('categories');
 
     return NextResponse.json(category, { status: 201 });
   } catch (error) {
