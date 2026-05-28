@@ -1,7 +1,7 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-// Hardening NEXTAUTH_SECRET fallback for production
+// Hardening NEXTAUTH_SECRET fallback forproduction  
 if (process.env.NODE_ENV === "production" && !process.env.NEXTAUTH_SECRET) {
   throw new Error("CRITICAL SECURITY ERROR: NEXTAUTH_SECRET is not configured in production!");
 }
