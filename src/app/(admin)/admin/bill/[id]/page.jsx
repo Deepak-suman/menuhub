@@ -87,7 +87,7 @@ export default function BillPreviewPage({ params }) {
             )}
           </div>
 
-          {/* Items Table */}
+          {/* Items Table test */}
           <table className="w-full text-left text-[12px] mb-4">
             <thead>
               <tr className="border-b-2 border-slate-900 font-black">
