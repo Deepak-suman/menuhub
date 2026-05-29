@@ -11,7 +11,7 @@ function generateSlug(name) {
 
 export async function POST(req) {
   try {
-    // 1. Session Protection: Enforce Super Admin only
+    // 1. Session Protection: Enforce Super Admin only TestDDDDDDDD
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== "SUPER_ADMIN") {
       return NextResponse.json({ error: "Unauthorized. Super Admin access only." }, { status: 403 });
@@ -80,10 +80,10 @@ export async function POST(req) {
 
       // Create a default category for the newly registered user
       await tx.category.create({
-         data: {
-             name: "Main Course",
-             restaurantId: restaurant.id
-         }
+        data: {
+          name: "Main Course",
+          restaurantId: restaurant.id
+        }
       })
 
       return { user, restaurant };
