@@ -71,9 +71,8 @@ export async function PATCH(req) {
       },
     });
 
-    revalidateTag('settings');
-    // Also revalidate tenants because name/logo appears in customer menu which relies on tenant context
-    revalidateTag('tenants');
+    revalidateTag(`settings-${restaurantId}`);
+    revalidateTag(`tenant-slug-${updated.slug}`);
 
     return NextResponse.json(updated);
   } catch (error) {

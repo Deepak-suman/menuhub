@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { rateLimit } from "@/lib/rate-limit";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 function generateSlug(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
@@ -9,6 +11,12 @@ function generateSlug(name) {
 
 export async function POST(req) {
   try {
+    // 1. Session Protection: Enforce Super Admin only
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Unauthorized. Super Admin access only." }, { status: 403 });
+    }
+
     const ip = req.headers.get("x-forwarded-for") || "unknown";
     if (!await rateLimit(ip, 3, 60000)) { // Max 3 signups per minute per IP
       return NextResponse.json({ error: "Too many signup requests. Please try again later." }, { status: 429 });

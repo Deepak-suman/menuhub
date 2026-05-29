@@ -33,7 +33,7 @@ export async function DELETE(req, { params }) {
 
     await prisma.category.delete({ where: { id: id } });
 
-    revalidateTag('categories');
+    revalidateTag(`categories-${category.restaurantId}`);
 
     return NextResponse.json({ success: true, message: "Category deleted successfully" });
   } catch (error) {

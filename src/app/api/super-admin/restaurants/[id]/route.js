@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { encrypt, decrypt } from "@/lib/encryption";
+import { revalidateTag } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -55,12 +56,20 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
     }
 
+    // Fetch existing slug to check for changes
+    const existingRestaurant = await prisma.restaurant.findUnique({
+      where: { id },
+      select: { slug: true }
+    });
+    const oldSlug = existingRestaurant?.slug;
+
     const updatedRestaurant = await prisma.restaurant.update({
       where: { id },
       data: updateData,
       select: {
         id: true,
         name: true,
+        slug: true,
         isActive: true,
         plan: true,
         razorpayKeyId: true,
@@ -70,6 +79,22 @@ export async function PATCH(req, { params }) {
         chargesNote: true,
       }
     });
+
+    // Invalidate settings, menu, and categories cache
+    revalidateTag(`settings-${id}`);
+    revalidateTag(`menu-${id}`);
+    revalidateTag(`categories-${id}`);
+
+    // Invalidate tenant slug cache
+    const newSlug = updatedRestaurant.slug;
+    if (newSlug) {
+      if (oldSlug && oldSlug !== newSlug) {
+        revalidateTag(`tenant-slug-${oldSlug}`);
+        revalidateTag(`tenant-slug-${newSlug}`);
+      } else {
+        revalidateTag(`tenant-slug-${newSlug}`);
+      }
+    }
 
     return NextResponse.json(updatedRestaurant, { status: 200 });
   } catch (error) {
